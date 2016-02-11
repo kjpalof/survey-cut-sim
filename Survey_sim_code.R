@@ -15,3 +15,6 @@
 
 dat <- read.csv("tanner crab data.csv") # biomass by year and survey area
 percent <- read.csv("tanner crab percent.csv") # file with the percent contribution for each area
+
+head(dat)
+head(percent)
