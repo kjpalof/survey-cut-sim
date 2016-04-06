@@ -11,10 +11,18 @@ library(stringr)
 library(ggplot2)
 library(tidyr)
 library(reshape2)
+library(extrafont)
+library(ggthemes)
+#set graphing theme
+loadfonts(device="win")
+windowsFonts(Times=windowsFont("TT Times New Roman"))
+theme_set(theme_bw(base_size = 12, base_family = 'Times New Roman')+ 
+            theme(panel.grid.major = element_blank(), 
+                  panel.grid.minor = element_blank()))
 
 #Load data
 #####
-#Data needed: 1) biomass for each area for each year
+#Data needed: 1) biomass for each area for each year ONLY LEGAL BIOMASS USED HERE
 #             2) % survey area contribution based on historic catch 
 # Regional biomass is the sum of the survey area biomasses and the non-surveyed areas expanded biomass
 #   Biomass is expanding by the equation: 
@@ -89,11 +97,21 @@ areas_RKC_only <-c("EI", "GB", "LS", "NJ", "PB", "PS", "SC", "SP")
 #################### load survey_sim from function.R file ########################
 
 sim2015 <- survey_sim (dat2, areas_2015)
-ggplot(sim2015, aes(Year_Survey, total_lb, color = type)) + geom_point() +geom_smooth()
+ggplot(sim2015, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass')+
+  ggtitle('2015 survey areas simulation')
 
 #survey_sim(dat2, areas_all) # check to confirm that the difference is 0 when all areas are included. 
 
 simRKC2 <- survey_sim (dat2, areas_RKC_only)
-ggplot(simRKC2, aes(Year_Survey, total_lb, color = type)) + geom_point() +geom_smooth()
+ggplot(simRKC2, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass')+
+  ggtitle('RKC survey only simulation')
 
 
