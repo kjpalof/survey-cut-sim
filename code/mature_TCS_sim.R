@@ -31,7 +31,7 @@ theme_set(theme_bw(base_size = 12, base_family = 'Times New Roman')+
 #                                                           #this 66% was calculated by subtracting and not in the way calculated here.
 getwd()
 setwd("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data")
-dat_mature <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data.csv") # biomass by year and survey area
+dat_mature <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_mature.csv") # biomass by year and survey area
 percent <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab percent.csv") # file with the percent contribution for each area
 
 head(dat_mature) # just the biomass of legal crab 
@@ -44,3 +44,71 @@ head(percent)
 dat_mature %>%
   right_join(percent, by="SurveyArea") -> dat3
 head(dat3)
+
+# calculate known biomass for each year and then add expansion biomass and total biomass columns
+# using percent for each area from historic harvest - percent_hist_harvest
+# how to creat known data data frames using either hist_harvest or survey area % 
+##### 
+dat3 %>%
+  mutate(percent_real = ifelse (Biomass_lb > 0, percent_hist_harvest, 0)) %>%
+  group_by(Year_Survey) %>%
+  # want to exclude areas that do not have biomass estimates
+  summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
+  # summarizes the expansion for each year based on the areas with  biomass estimates
+  mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) -> known_mature_harvest
+# using percent for each area from the last 10 years of the survey - percent_survey_area
+dat3 %>%
+  mutate(percent_real = ifelse (Biomass_lb > 0, mature_survey_percent, 0)) %>%
+  group_by(Year_Survey) %>%
+  # want to exclude areas that do not have biomass estimates
+  summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
+  # summarizes the expansion for each year based on the areas with  biomass estimates
+  mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) -> known_mature_survey
+
+# make sure you use the correct function 
+# survey_sim uses survey area % contribution from the last 10 years the other - survey_sim_harvest - uses historic harvest contribution
+
+# input into function the areas you want to use in the simulation.
+areas_all <- c("EI" , "GB" , "GLB" ,"HB"  ,"ICY" ,"LS",  "NJ" , "PB" , "PC" , "PF" , "PS",  "SC" , "SP" , "TB")
+areas_all # all the areas 
+areas_2015 <- c("EI" , "GB" , "GLB" ,"HB"  ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" , "TB")
+### those used in 2015 
+areas_RKC_only <-c("EI", "GB", "LS", "NJ", "PB", "PS", "SC", "SP")
+### only the RKC survey areas.
+areas_1 <- c("EI" , "GB" , "GLB" ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" )
+#2015 areas minus "TB", "HB" or leg 2
+
+############################
+#################### load survey_sim from function.R file ########################
+
+sim2015mature <- survey_sim_mature (dat3, areas_2015)
+ggplot(sim2015mature, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 85000000, 1000000))+
+  coord_cartesian(ylim=c(0,8500000)) +
+  xlab('Survey Year') + ylab('Total MATURE biomass')+
+  ggtitle('2015 survey areas simulation mature lb')
+ggsave("sim2015mature.png")
+
+#survey_sim(dat2, areas_all) # check to confirm that the difference is 0 when all areas are included. 
+
+simRKC2mature <- survey_sim_mature (dat3, areas_RKC_only)
+ggplot(simRKC2mature, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 85000000, 1000000))+
+  coord_cartesian(ylim=c(0,8500000)) +
+  xlab('Survey Year') + ylab('Total MATURE biomass')+
+  ggtitle('RKC survey only simulation mature lb')
+ggsave("simRKC2mature.png")
+
+sim_areas1mature <- survey_sim_mature(dat3, areas_1)
+ggplot(sim_areas1mature, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 85000000, 1000000))+
+  coord_cartesian(ylim=c(0,8500000)) +
+  xlab('Survey Year') + ylab('Total MATURE biomass')+
+  ggtitle('sim using only leg 1 TCS and 2015 areas mature lb')
+ggsave("sim_areas1mature.png")
+
+require(gridExtra)
+grid.arrange(a, b, ncol=2)
