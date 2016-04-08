@@ -22,9 +22,9 @@ survey_sim_harvest <- function(df, areas_used) {
     summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
     # summarizes the expansion for each year based on the areas with  biomass estimates
     mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass, type = "K") -> known_dat_harvest
-  known_dat_harvest %>%
-    mutate(sim_expansion = sim$sim_expansion, sim_total_lb = sim$simtotal_lb)%>%
-    mutate(diff_lb = (total_lb - sim$simtotal_lb))
+  out <- rbind(known_dat_harvest, sim)
+  out %>%
+    mutate (diff = ifelse( type == "K", 0, (known_dat_harvest$total_lb - sim$total_lb))) 
   
 }
 

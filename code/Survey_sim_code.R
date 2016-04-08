@@ -29,8 +29,8 @@ theme_set(theme_bw(base_size = 12, base_family = 'Times New Roman')+
 #         total regional biomass = Survey area biomass/ % biomass in survey areas
 # for 2015/2016 this is 2,142,529 / 0.66 = 3,246,255
 getwd()
-setwd("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/code")
-dat <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data.csv") # biomass by year and survey area
+setwd("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data")
+dat <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_legal.csv") # biomass by year and survey area
 percent <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab percent.csv") # file with the percent contribution for each area
 
 head(dat) # just the biomass of legal crab 
@@ -92,6 +92,8 @@ areas_2015 <- c("EI" , "GB" , "GLB" ,"HB"  ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "
   ### those used in 2015 
 areas_RKC_only <-c("EI", "GB", "LS", "NJ", "PB", "PS", "SC", "SP")
   ### only the RKC survey areas.
+areas_1 <- c("EI" , "GB" , "GLB" ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" )
+  #2015 areas minus "TB", "HB" or leg 2
 
 ############################
 #################### load survey_sim from function.R file ########################
@@ -103,6 +105,7 @@ ggplot(sim2015, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +
   coord_cartesian(ylim=c(0,5500000)) +
   xlab('Survey Year') + ylab('Total LEGAL biomass')+
   ggtitle('2015 survey areas simulation')
+ggsave("sim2015.png")
 
 #survey_sim(dat2, areas_all) # check to confirm that the difference is 0 when all areas are included. 
 
@@ -113,5 +116,13 @@ ggplot(simRKC2, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +
   coord_cartesian(ylim=c(0,5500000)) +
   xlab('Survey Year') + ylab('Total LEGAL biomass')+
   ggtitle('RKC survey only simulation')
+ggsave("simRKC2.png")
 
-
+sim_areas1 <- survey_sim(dat2, areas_1)
+ggplot(sim_areas1, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass')+
+  ggtitle('sim using only leg 1 TCS and 2015 areas')
+ggsave("sim_areas1.png")
