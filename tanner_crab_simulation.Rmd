@@ -1,0 +1,66 @@
+---
+title: "Tanner Crab Simulation"
+author: "Katie Palof"
+date: "April 7, 2016"
+output: html_document
+---
+
+In a response to budget constraints, that may yield a decrease in survey areas being evaluated annually, simulations were performed to determine the influence of various survey adjustments on the regional biomass estimate.  These were evaluated for both legal and mature biomass.  The results reported here are for the estimates of total legal or mature biomass for the SE Region - they include both survey and non-survey biomass.  
+
+### Data Used
+The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models for mature biomass from each area.  
+
+The % expansion used from 2001 until 2014 designated 71% of the tanner biomass to be from the survey areas while 29% was from non-surveyed areas.  This percentage was calculated form historic (1980-2000) harvest records. 
+
+
+
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+library(plyr)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(tidyr)
+library(reshape2)
+library(extrafont)
+library(ggthemes)
+#setwd("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp")
+dat <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_legal.csv") # biomass by year and survey area
+percent <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab percent.csv") # file with the percent contribution for each area
+dat %>%
+  right_join(percent, by="SurveyArea") -> dat2
+dat2 %>%
+  mutate(percent_real = ifelse (Biomass_lb > 0, percent_survey_area, 0)) %>%
+  group_by(Year_Survey) %>%
+  # want to exclude areas that do not have biomass estimates
+  summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
+  # summarizes the expansion for each year based on the areas with  biomass estimates
+  mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) ->   known_dat_survey
+
+```
+
+### Known biomass from surveys and CSA models
+
+```{r, echo = FALSE}
+#head(dat2)
+# using percent for each area from the last 10 years of the survey - percent_survey_area
+known_dat_survey
+ls()
+
+```
+
+```{r}
+
+```
+
+
+Total legal biomass using historic known biomass from surveys and those calculated in the simulation here, without using Port Frederick or Port Camden (2015 sampling areas).
+
+Total legal biomiass using histoic biomass from surveys and those calculated from a simulation using ONLY red king crab survey areas. 
+
+![Simulation using only RKC areas](simRKC2.png)
+
+```{r, echo=FALSE}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
