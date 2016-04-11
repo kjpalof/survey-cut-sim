@@ -1,16 +1,22 @@
 ---
 title: "Tanner Crab Simulation"
 author: "Katie Palof"
-date: "April 7, 2016"
+date: "April 11, 2016"
 output: html_document
 ---
 
 In a response to budget constraints, that may yield a decrease in survey areas being evaluated annually, simulations were performed to determine the influence of various survey adjustments on the regional biomass estimate.  These were evaluated for both legal and mature biomass.  The results reported here are for the estimates of total legal and mature biomass for the SE Region - they include both survey and non-survey biomass.  
+The goal of these simulations was to determine the probably effect of removing survey areas on the estiamte of total biomass.  
+
+The total regional biomass for Tanner crab consists of biomass from the surveyed areas that is expanded to the non-surveyed areas.  
+
+![Tanner crab biomass known data](known_dat_adj.png)
 
 ### Data Used
-The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models for mature biomass from each area.  
+The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.    
 
 The % expansion used from 2001 until 2014 designated 71% of the tanner biomass to be from the survey areas while 29% was from non-surveyed areas.  This percentage was calculated form historic (1980-2000) harvest records. 
+It was thought that when removing survey areas that this expansion would be adjusted by the percent contribution of that survey area to historic harvest.  However, this drastically changed the biomass estimates due to the historic harvest percentages being different from each survey area's actual contribution to the biomass in most years.  Therefore, the contribution of each survey areas to the estimate of biomass was calculated for the last 10 years of the survey (2005-2015).  This percent contribution, scaled to a total of 71% was used to in these simulations to determine the expansion factor for each area if it was removed from the survey.  
 
 
 
@@ -24,26 +30,27 @@ library(reshape2)
 library(extrafont)
 library(ggthemes)
 #setwd("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp")
-dat <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_legal.csv") # biomass by year and survey area
+dat_adj <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_legal_adj.csv") # biomass by year and survey area
 percent <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab percent.csv") # file with the percent contribution for each area
-dat %>%
-  right_join(percent, by="SurveyArea") -> dat2
-dat2 %>%
+dat_adj %>%
+  right_join(percent, by="SurveyArea") -> dat4
+dat4 %>%
   mutate(percent_real = ifelse (Biomass_lb > 0, percent_survey_area, 0)) %>%
   group_by(Year_Survey) %>%
   # want to exclude areas that do not have biomass estimates
   summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
   # summarizes the expansion for each year based on the areas with  biomass estimates
-  mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) ->   known_dat_survey
+  mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) -> known_dat_survey_adj
 
 ```
 
 ### Known biomass from surveys and CSA models
 
+Legal Biomass and expansion factors 
 ```{r, echo = FALSE}
 #head(dat2)
 # using percent for each area from the last 10 years of the survey - percent_survey_area
-known_dat_survey
+known_dat_survey_adj
 ls()
 
 ```
