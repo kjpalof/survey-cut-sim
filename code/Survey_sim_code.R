@@ -97,7 +97,8 @@ areas_1 <- c("EI" , "GB" , "GLB" ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP"
 
 ############################
 #################### load survey_sim from function.R file ########################
-
+######################## Simulations and figures ###################
+##########################
 sim2015 <- survey_sim (dat2, areas_2015)
 ggplot(sim2015, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
   scale_color_tableau() +
@@ -126,3 +127,65 @@ ggplot(sim_areas1, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2
   xlab('Survey Year') + ylab('Total LEGAL biomass')+
   ggtitle('sim using only leg 1 TCS and 2015 areas')
 ggsave("sim_areas1.png")
+
+
+######################################################################################
+#########################  adjusted biomass to attempt to match historic #############
+########################################################################################
+# The biomass from Thomas Bay, Glacier Bay, and Port Camden in the years from 1997 to 2001, if it wasn't estimated
+#   from surveys was estimated to be the "minimium of all consequetive years"  this was kept in place but not 
+#   recalculated after 2012.  Therefore they are assumed to be the mininmium from *start to 2012.  They were calculated
+#   that way in the "tanner crab data.xlxs" file in this folder.  The same simulations were done with this data below 
+#   This was only done in an attempt to match historically reported total biomass (see annual stock health document - figure 1)
+
+# LEGAL adjusted biomass 
+dat_adj <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_legal_adj.csv") # biomass by year and survey area
+#percent <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab percent.csv") # file with the percent contribution for each area
+
+head(dat_adj) # just the biomass of legal crab 
+head(percent)
+
+#combine the two data sets
+####
+dat_adj %>%
+  right_join(percent, by="SurveyArea") -> dat4
+head(dat4)
+
+# using percent for each area from the last 10 years of the survey - percent_survey_area
+dat4 %>%
+  mutate(percent_real = ifelse (Biomass_lb > 0, percent_survey_area, 0)) %>%
+  group_by(Year_Survey) %>%
+  # want to exclude areas that do not have biomass estimates
+  summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
+  # summarizes the expansion for each year based on the areas with  biomass estimates
+  mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) -> known_dat_survey_adj
+ggplot(known_dat_survey_adj, aes(Year_Survey, total_lb)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 60000000, 1000000))+
+  coord_cartesian(ylim=c(0,6000000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
+  ggtitle('Tanner crab total biomass (survey and non)')
+ggsave("known_dat_adj.png")
+
+#####################################
+#####################  Simulations 
+###################################
+sim2015_adj <- survey_sim (dat4, areas_2015)
+ggplot(sim2015_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
+  ggtitle('2015 survey areas simulation')
+#ggsave("sim2015.png")
+
+#survey_sim(dat2, areas_all) # check to confirm that the difference is 0 when all areas are included. 
+
+simRKC2_adj <- survey_sim (dat4, areas_RKC_only)
+ggplot(simRKC2_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
+  ggtitle('RKC survey only simulation')
+#ggsave("simRKC2.png")
