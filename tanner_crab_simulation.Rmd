@@ -10,13 +10,17 @@ The goal of these simulations was to determine the probably effect of removing s
 
 The total regional biomass for Tanner crab consists of biomass from the surveyed areas that is expanded to the non-surveyed areas.  
 
+
+#### Figure 1: 
 ![Tanner crab biomass known data](known_dat_adj.png)
 
 ### Data Used
-The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.    
+The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models (historic excel files) for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.    
 
-The % expansion used from 2001 until 2014 designated 71% of the tanner biomass to be from the survey areas while 29% was from non-surveyed areas.  This percentage was calculated form historic (1980-2000) harvest records. 
-It was thought that when removing survey areas that this expansion would be adjusted by the percent contribution of that survey area to historic harvest.  However, this drastically changed the biomass estimates due to the historic harvest percentages being different from each survey area's actual contribution to the biomass in most years.  Therefore, the contribution of each survey areas to the estimate of biomass was calculated for the last 10 years of the survey (2005-2015).  This percent contribution, scaled to a total of 71% was used to in these simulations to determine the expansion factor for each area if it was removed from the survey.  
+The expansion percentage used from 2001 until 2014 designated 71% of the tanner biomass to be from the survey areas while 29% was from non-surveyed areas.  This percentage was calculated form historic (1980-2000) harvest records. 
+It was thought that when removing survey areas that this expansion would be adjusted by the percent contribution of that survey area to historic harvest.  However, this drastically changed the biomass estimates due to the historic harvest percentages being different from each survey area's actual contribution to the biomass in most years.  Therefore, the contribution of each survey areas to the estimate of biomass was calculated for the last 10 years of the survey (2005-2015).  This percent contribution, scaled to a total of 71%, was used to in these simulations to determine the expansion factor for each area if it was removed from the survey.  
+
+In each simulation the areas surveyed were set for all years.  Historic survey biomass was used for these areas and their percent contribution was determined by summing the percent contribution for each area.  Each simulation therefore, results in a time series of total biomass estimates where the survey biomass component only uses areas designated in the simulation and the non-survery biomass is expanded from the calculated survey biomass.  The simulation does NOT currently allow for variation between years of the survey areas sampled, this would be the next step.  The total biomass time series was then compared to the "known" time series of total biomass.  This comparison is represented visually in a figure for each simulation and as an average percent difference from the known biomass (table X). 
 
 
 
@@ -51,9 +55,92 @@ Legal Biomass and expansion factors
 #head(dat2)
 # using percent for each area from the last 10 years of the survey - percent_survey_area
 known_dat_survey_adj
-ls()
+#ls()
 
 ```
+
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+# set up for survey simulations
+areas_all <- c("EI" , "GB" , "GLB" ,"HB"  ,"ICY" ,"LS",  "NJ" , "PB" , "PC" , "PF" , "PS",  "SC" , "SP" , "TB")
+areas_2015 <- c("EI" , "GB" , "GLB" ,"HB"  ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" , "TB")
+  ### those used in 2015 
+areas_RKC_only <-c("EI", "GB", "LS", "NJ", "PB", "PS", "SC", "SP")
+  ### only the RKC survey areas.
+areas_1 <- c("EI" , "GB" , "GLB" ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" )
+  #2015 areas minus "TB", "HB" or leg 2
+
+#using the last 10 years of survey biomass for each area to calculate percent contribution
+# currently uses legal % expansion from survey see next function for mature
+survey_sim <- function(df, areas_used) {
+  df %>%
+    mutate(percent_usedA = ifelse(SurveyArea %in% areas_used, percent_survey_area, 0)) %>%
+    mutate(percent_used = ifelse(Biomass_lb >0, percent_usedA, 0)) %>%
+    #only want to use biomass from areas that are included in the sim
+    mutate(biomass_used = ifelse(SurveyArea %in% areas_used, Biomass_lb, 0)) %>%
+    group_by(Year_Survey) %>%
+    # want to exclude areas that do not have biomass estimates
+    summarize(expansion = sum (percent_used, na.rm=T), survey_biomass = sum (biomass_used, na.rm =T)) %>%
+    # summarizes the expansion for each year based on the areas with  biomass estimates
+    # need to add type for graphing K = known data
+    mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass, type = "S") -> sim2
+  df %>%
+    mutate(percent_real = ifelse (Biomass_lb > 0, percent_survey_area, 0)) %>%
+    group_by(Year_Survey) %>%
+    # want to exclude areas that do not have biomass estimates
+    summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
+    # summarizes the expansion for each year based on the areas with  biomass estimates
+    # need to add type for graphing 
+    mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass, type = "K") -> known_dat_survey
+  out <- rbind(known_dat_survey, sim2)
+  out %>%
+    # want to add a percent difference column 
+    mutate (diff = ifelse( type == "K", 0, (sim2$total_lb  - known_dat_survey$total_lb)), per_diff = 
+              ifelse( type == "K", 0, ((sim2$total_lb  - known_dat_survey$total_lb)/ known_dat_survey$total_lb))) 
+
+}
+
+# mature percent for expansion used here
+survey_sim_mature <- function(df, areas_used) {
+  df %>%
+    mutate(percent_usedA = ifelse(SurveyArea %in% areas_used, mature_survey_percent, 0)) %>%
+    mutate(percent_used = ifelse(Biomass_lb >0, percent_usedA, 0)) %>%
+    #only want to use biomass from areas that are included in the sim
+    mutate(biomass_used = ifelse(SurveyArea %in% areas_used, Biomass_lb, 0)) %>%
+    group_by(Year_Survey) %>%
+    # want to exclude areas that do not have biomass estimates
+    summarize(expansion = sum (percent_used, na.rm=T), survey_biomass = sum (biomass_used, na.rm =T)) %>%
+    # summarizes the expansion for each year based on the areas with  biomass estimates
+    # need to add type for graphing K = known data
+    mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass, type = "S") -> sim2
+  df %>%
+    mutate(percent_real = ifelse (Biomass_lb > 0, mature_survey_percent, 0)) %>%
+    group_by(Year_Survey) %>%
+    # want to exclude areas that do not have biomass estimates
+    summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
+    # summarizes the expansion for each year based on the areas with  biomass estimates
+    # need to add type for graphing 
+    mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass, type = "K") -> known_dat_survey
+  out <- rbind(known_dat_survey, sim2)
+  out %>%
+    # want to add a percent difference column 
+    mutate (diff = ifelse( type == "K", 0, (sim2$total_lb  - known_dat_survey$total_lb)), per_diff = 
+              ifelse( type == "K", 0, ((sim2$total_lb  - known_dat_survey$total_lb)/ known_dat_survey$total_lb))) 
+  
+}
+```
+
+### Simulation 1: 2015 survey areas, removed port camden and port frederick 
+Port Camden and Port Frederick were removed from the entire time series to determine their overall influence on total biomass.  Prior to performing these simulations it was determined that these areas were very small contributors to the survey and most likely did not play a large role in determining total biomass. 
+
+These results were validated in the simulation.  The total biomass time series was nearly identical to that using all of the survey areas.  
+
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+sim2015_adj <- survey_sim (dat4, areas_2015)
+mean (sim2015_adj$per_diff[20:38])
+#ls()
+
+```
+
 
 ```{r}
 
@@ -64,16 +151,49 @@ Total legal biomass using historic known biomass from surveys and those calculat
 
 
 
+### Simulation 2: Estimating Tanner crab abundance using only RKC survey areas
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+simRKC2_adj <- survey_sim (dat4, areas_RKC_only)
+mean (simRKC2_adj$per_diff[20:38])
+ls()
+
+```
 
 Total legal biomiass using histoic biomass from surveys and those calculated from a simulation using ONLY red king crab survey areas. 
 
-![Simulation using only RKC areas](simRKC2.png)
+![Simulation using only RKC areas](simRKC2_adj.png)
 
 Total mature biomass using the same simulation
 ![Simulation using only RKC areas for mature biomass](simRKC2mature.png)
 
-```{r, echo=FALSE}
+### Simulation 3: 2015 survey areas using only Tanner crab leg 1 (removing leg 2)
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+sim_areas1_adj <- survey_sim(dat4, areas_1)
+mean (sim_areas1_adj$per_diff[20:38])
+ls()
 
 ```
+
+```{r, echo=FALSE}
+# table to summarize the average % difference  over all years for each simulation
+#sim2015_adj$per_diff
+#sim2015_adj$per_diff[20:38]
+#mean (sim2015_adj$per_diff[20:38])
+
+sim2015_adj_avg <- round(mean (sim2015_adj$per_diff[20:38]),4)*100
+simRKC2_adj_avg <- round(mean (simRKC2_adj$per_diff[20:38]),4)*100
+sim_areas1_adj_avg <- round(mean (sim_areas1_adj$per_diff[20:38]),4)*100
+
+#per_diff <- c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg)
+table1 <- matrix(c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg), ncol =3, byrow=TRUE)
+colnames(table1) <- c("Sim 1", "Sim 2", "Sim 3")
+rownames(table1) <- c("average % difference")
+table1
+####
+
+```
+
+
+
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
