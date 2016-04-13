@@ -20,6 +20,7 @@ theme_set(theme_bw(base_size = 12, base_family = 'Times New Roman')+
             theme(panel.grid.major = element_blank(), 
                   panel.grid.minor = element_blank()))
 
+#rm(list= ls())  clear workspace
 #Load data
 #####
 #Data needed: 1) biomass for each area for each year ONLY LEGAL BIOMASS USED HERE
@@ -177,7 +178,7 @@ ggplot(sim2015_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=
   coord_cartesian(ylim=c(0,5500000)) +
   xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
   ggtitle('2015 survey areas simulation')
-#ggsave("sim2015.png")
+ggsave("sim2015_adj.png")
 
 #survey_sim(dat2, areas_all) # check to confirm that the difference is 0 when all areas are included. 
 
@@ -188,4 +189,31 @@ ggplot(simRKC2_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=
   coord_cartesian(ylim=c(0,5500000)) +
   xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
   ggtitle('RKC survey only simulation')
-#ggsave("simRKC2.png")
+ggsave("simRKC2_adj.png")
+
+sim_areas1_adj <- survey_sim(dat4, areas_1)
+ggplot(sim_areas1_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
+  ggtitle('sim using only leg 1 TCS and 2015 areas')
+ggsave("sim_areas1_adj.png")
+
+
+# table to summarize the average % difference  over all years for each simulation
+#sim2015_adj$per_diff
+#sim2015_adj$per_diff[20:38]
+#mean (sim2015_adj$per_diff[20:38])
+
+sim2015_adj_avg <- round(mean (sim2015_adj$per_diff[20:38]),4)*100
+simRKC2_adj_avg <- round(mean (simRKC2_adj$per_diff[20:38]),4)*100
+sim_areas1_adj_avg <- round(mean (sim_areas1_adj$per_diff[20:38]),4)*100
+
+#per_diff <- c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg)
+table1 <- matrix(c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg), ncol =3, byrow=TRUE)
+colnames(table1) <- c("Sim 1", "Sim 2", "Sim 3")
+rownames(table1) <- c("average % difference")
+table1
+####
+
