@@ -158,7 +158,7 @@ ggplot(sim2015mature_adj, aes(Year_Survey, total_lb, color = type)) + geom_point
   scale_color_tableau() +
   scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 8000000, 1000000))+
   coord_cartesian(ylim=c(0,8000000)) +
-  xlab('Survey Year') + ylab('Total MATURE biomass')+
+  xlab('Survey Year') + ylab('Total MATURE biomass adj')+
   ggtitle('2015 survey areas simulation MATURE total lb')
 ggsave("sim2015mature_adj.png")
 
@@ -169,7 +169,7 @@ ggplot(simRKC2mature_adj, aes(Year_Survey, total_lb, color = type)) + geom_point
   scale_color_tableau() +
   scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 8000000, 1000000))+
   coord_cartesian(ylim=c(0,8000000)) +
-  xlab('Survey Year') + ylab('Total MATURE biomass')+
+  xlab('Survey Year') + ylab('Total MATURE biomass adj')+
   ggtitle('RKC survey only simulation MATURE total lb')
 ggsave("simRKC2mature_adj.png")
 
@@ -178,6 +178,6 @@ ggplot(sim_areas1mature_adj, aes(Year_Survey, total_lb, color = type)) + geom_po
   scale_color_tableau() +
   scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 8000000, 1000000))+
   coord_cartesian(ylim=c(0,8000000)) +
-  xlab('Survey Year') + ylab('Total MATURE biomass')+
+  xlab('Survey Year') + ylab('Total MATURE biomass adj')+
   ggtitle('sim using only leg 1 TCS and 2015 areas MATURE total lb')
 ggsave("sim_areas1mature_adj.png")
