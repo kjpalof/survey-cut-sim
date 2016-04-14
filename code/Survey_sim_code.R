@@ -165,7 +165,7 @@ ggplot(known_dat_survey_adj, aes(Year_Survey, total_lb)) + geom_point(size=2) +g
   scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 60000000, 1000000))+
   coord_cartesian(ylim=c(0,6000000)) +
   xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
-  ggtitle('Tanner crab total biomass (survey and non)')
+  ggtitle('Tanner crab total LEGAL biomass (survey and non)')
 ggsave("known_dat_adj.png")
 
 #####################################
