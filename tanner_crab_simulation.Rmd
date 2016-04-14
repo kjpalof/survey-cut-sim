@@ -11,8 +11,6 @@ The goal of these simulations was to determine the probably effect of removing s
 The total regional biomass for Tanner crab consists of biomass from the surveyed areas that is expanded to the non-surveyed areas.  
 
 
-#### Figure 1: 
-![Tanner crab biomass known data](known_dat_adj.png)
 
 ### Data Used
 The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models (historic excel files) for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.    
@@ -36,8 +34,13 @@ library(ggthemes)
 #setwd("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp")
 dat_adj <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_legal_adj.csv") # biomass by year and survey area
 percent <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab percent.csv") # file with the percent contribution for each area
+dat_mature_adj <-read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_mature_adj.csv") 
+# adjusted to accomidate how early biomasses were calculated in areas not surveyed.
+
+#### Legal- combine two data sets
 dat_adj %>%
   right_join(percent, by="SurveyArea") -> dat4
+
 dat4 %>%
   mutate(percent_real = ifelse (Biomass_lb > 0, percent_survey_area, 0)) %>%
   group_by(Year_Survey) %>%
@@ -46,11 +49,25 @@ dat4 %>%
   # summarizes the expansion for each year based on the areas with  biomass estimates
   mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) -> known_dat_survey_adj
 
+### Mature - combine two data sets
+#####
+dat_mature_adj %>%
+  right_join(percent, by="SurveyArea") -> dat5
+#head(dat5)
+# using percent for each area from the last 10 years of the survey - percent_survey_area
+dat5 %>%
+  mutate(percent_real = ifelse (Biomass_lb > 0, mature_survey_percent, 0)) %>%
+  group_by(Year_Survey) %>%
+  # want to exclude areas that do not have biomass estimates
+  summarize(expansion = sum (percent_real, na.rm=T), survey_biomass = sum (Biomass_lb, na.rm =T)) %>%
+  # summarizes the expansion for each year based on the areas with  biomass estimates
+  mutate(non_biomass = (survey_biomass / expansion) - survey_biomass, total_lb = survey_biomass + non_biomass) -> known_mature_survey_adj
+
 ```
 
-### Known biomass from surveys and CSA models
+### Known biomass from CSA models (using survey CPUEs)
 
-Legal Biomass and expansion factors 
+#####Legal Biomass and expansion factors 
 ```{r, echo = FALSE}
 #head(dat2)
 # using percent for each area from the last 10 years of the survey - percent_survey_area
@@ -58,6 +75,19 @@ known_dat_survey_adj
 #ls()
 
 ```
+#### Figure 1: 
+![Tanner crab biomass known data](known_dat_adj.png)
+
+#####Mature Biomass and expansion factors 
+```{r, echo = FALSE}
+#head(dat2)
+# using percent for each area from the last 10 years of the survey - percent_survey_area
+known_mature_survey_adj
+#ls()
+```
+
+#### Figure 2: 
+![Tanner crab biomass known data](known_mature_adj.png)
 
 ```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
 # set up for survey simulations
@@ -129,7 +159,7 @@ survey_sim_mature <- function(df, areas_used) {
 }
 ```
 
-### Simulation 1: 2015 survey areas, removed port camden and port frederick 
+### Simulation 1: 2015 survey areas, removed Port Camden and Port Frederick 
 Port Camden and Port Frederick were removed from the entire time series to determine their overall influence on total biomass.  Prior to performing these simulations it was determined that these areas were very small contributors to the survey and most likely did not play a large role in determining total biomass. 
 
 These results were validated in the simulation.  The total biomass time series was nearly identical to that using all of the survey areas.  
@@ -138,33 +168,36 @@ These results were validated in the simulation.  The total biomass time series w
 sim2015_adj <- survey_sim (dat4, areas_2015)
 mean (sim2015_adj$per_diff[20:38])
 #ls()
+sim2015mature_adj <- survey_sim_mature (dat5, areas_2015)
+mean (sim2015mature_adj$per_diff[20:38])
 
 ```
 
+#### Figure 3: 
+Total legal biomass using historic known biomass from surveys and those calculated in simulation 1, without using Port Frederick or Port Camden (2015 sampling areas).
+![Simulation using 2015 survey areas](sim2015_adj.png)
 
-```{r}
-
-```
-
-
-Total legal biomass using historic known biomass from surveys and those calculated in the simulation here, without using Port Frederick or Port Camden (2015 sampling areas).
-
+#### Figure 4: 
+Total mature biomass using historic known biomass from surveys and those calculated in simulation 1, without using Port Frederick or Port Camden (2015 sampling areas).
+![Simulation using 2015 survey areas](sim2015mature_adj.png)
 
 
 ### Simulation 2: Estimating Tanner crab abundance using only RKC survey areas
 ```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
 simRKC2_adj <- survey_sim (dat4, areas_RKC_only)
 mean (simRKC2_adj$per_diff[20:38])
-ls()
 
+simRKC2mature_adj <- survey_sim_mature (dat5, areas_RKC_only)
+mean (simRKC2mature_adj$per_diff[20:38])
+ls()
 ```
 
-Total legal biomiass using histoic biomass from surveys and those calculated from a simulation using ONLY red king crab survey areas. 
+Total legal biomiass using historic biomass from surveys and those calculated from a simulation using ONLY red king crab survey areas. 
 
 ![Simulation using only RKC areas](simRKC2_adj.png)
 
 Total mature biomass using the same simulation
-![Simulation using only RKC areas for mature biomass](simRKC2mature.png)
+![Simulation using only RKC areas for mature biomass](simRKC2mature_adj.png)
 
 ### Simulation 3: 2015 survey areas using only Tanner crab leg 1 (removing leg 2)
 ```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
@@ -173,6 +206,11 @@ mean (sim_areas1_adj$per_diff[20:38])
 ls()
 
 ```
+Total legal biomiass using historic biomass from surveys and those calculated from a simulation using 2015 survey areas and only leg 1 of the Tanner crab survey.
+
+![Simulation using 2015 areas and only Tanner leg 1](sim_areas1_adj.png)
+
+
 
 ```{r, echo=FALSE}
 # table to summarize the average % difference  over all years for each simulation
