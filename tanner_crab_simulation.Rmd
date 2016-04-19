@@ -5,24 +5,22 @@ date: "April 11, 2016"
 output: html_document
 ---
 
-In a response to budget constraints, that may yield a decrease in survey areas being evaluated annually, simulations were performed to determine the influence of various survey adjustments on the regional biomass estimate.  These were evaluated for both legal and mature biomass.  The results reported here are for the estimates of total legal and mature biomass for the SE Region - they include both survey and non-survey biomass.  
+In a response to budget constraints, that may yield a decrease in survey areas being evaluated annually, simulations were performed to determine the influence of various survey adjustments on the regional biomass estimate.  These were evaluated for both legal and mature biomass.  The results reported here are for the estimates of total legal and mature biomass for the SE Region - they include both survey and non-survey biomass. Biomass from surveyed areas is calculated using survey CPUE and a catch-survey-analysis (CSA) model, whereas non-surveyed area biomass is expanded from the estimate of surveyed areas. 
 The goal of these simulations was to determine the probably effect of removing survey areas on the estiamte of total biomass.  
-
-The total regional biomass for Tanner crab consists of biomass from the surveyed areas that is expanded to the non-surveyed areas.  
 
 
 
 ### Data Used
-The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models (historic excel files) for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.    
+The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models (historic excel files) for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.  To better match historically reported biomasses, estimates for Glacier Bay, Thomas Bay, Port Camden, and Holkham Bay for early years without a survey were estimated to be the minimium from the survey start until 2012. These are referred to in this document as adjusted biomass estiamtes of legal and mature crab. 
 
 The expansion percentage used from 2001 until 2014 designated 71% of the tanner biomass to be from the survey areas while 29% was from non-surveyed areas.  This percentage was calculated form historic (1980-2000) harvest records. 
 It was thought that when removing survey areas that this expansion would be adjusted by the percent contribution of that survey area to historic harvest.  However, this drastically changed the biomass estimates due to the historic harvest percentages being different from each survey area's actual contribution to the biomass in most years.  Therefore, the contribution of each survey areas to the estimate of biomass was calculated for the last 10 years of the survey (2005-2015).  This percent contribution, scaled to a total of 71%, was used to in these simulations to determine the expansion factor for each area if it was removed from the survey.  
 
-In each simulation the areas surveyed were set for all years.  Historic survey biomass was used for these areas and their percent contribution was determined by summing the percent contribution for each area.  Each simulation therefore, results in a time series of total biomass estimates where the survey biomass component only uses areas designated in the simulation and the non-survery biomass is expanded from the calculated survey biomass.  The simulation does NOT currently allow for variation between years of the survey areas sampled, this would be the next step.  The total biomass time series was then compared to the "known" time series of total biomass.  This comparison is represented visually in a figure for each simulation and as an average percent difference from the known biomass (table X). 
+In each simulation the areas surveyed were set for all years.  Historic survey biomass was used for these areas and the overall percent contribution was determined by summing the percent contribution for each area.  Each simulation therefore, results in a time series of total biomass estimates where the survey biomass component only uses areas designated in the simulation and the non-survery biomass is expanded from the calculated survey biomass.  The simulation does NOT currently allow for variation between years of the survey areas sampled, this would be the next step.  The total biomass time series was then compared to the "known" time series (K) of total biomass.  This comparison is represented visually in a figure for each simulation (S) and as an average percent difference from the known biomass (table X). 
 
 
 
-```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, warning = FALSE}
 library(plyr)
 library(dplyr)
 library(stringr)
@@ -68,18 +66,19 @@ dat5 %>%
 ### Known biomass from CSA models (using survey CPUEs)
 
 #####Legal Biomass and expansion factors 
-```{r, echo = FALSE}
+```{r, echo = FALSE, comment=""}
 #head(dat2)
 # using percent for each area from the last 10 years of the survey - percent_survey_area
 known_dat_survey_adj
 #ls()
 
 ```
+
 #### Figure 1: 
 ![Tanner crab biomass known data](known_dat_adj.png)
 
 #####Mature Biomass and expansion factors 
-```{r, echo = FALSE}
+```{r, echo = FALSE, comment=""}
 #head(dat2)
 # using percent for each area from the last 10 years of the survey - percent_survey_area
 known_mature_survey_adj
@@ -160,57 +159,82 @@ survey_sim_mature <- function(df, areas_used) {
 ```
 
 ### Simulation 1: 2015 survey areas, removed Port Camden and Port Frederick 
-Port Camden and Port Frederick were removed from the entire time series to determine their overall influence on total biomass.  Prior to performing these simulations it was determined that these areas were very small contributors to the survey and most likely did not play a large role in determining total biomass. 
+For the 2015 survey season the areas of Port Camden and Port Frederick were removed from the surveyed areas.  In the 2015 assessment these areas were considered part of the non-surveyed biomass.  This simulation was done to determine the overall influence of these areas on total biomass for the entire time series.  Prior to performing these simulations it was determined that these areas were very small contributors to the survey and most likely did not play a large role in determining total biomass. 
 
 These results were validated in the simulation.  The total biomass time series was nearly identical to that using all of the survey areas.  
 
-```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+Average percent difference for legal biomass in Sim 1 (this should be read as 0.38%)
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE, comment =""}
 sim2015_adj <- survey_sim (dat4, areas_2015)
-mean (sim2015_adj$per_diff[20:38])
+#paste("Average", "percent", "difference", "for", "legal", "biomass")
+round(mean (sim2015_adj$per_diff[20:38])*100, 4)
+```
+Average percent difference for mature biomass in Sim 1
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE, comment =""}
 #ls()
 sim2015mature_adj <- survey_sim_mature (dat5, areas_2015)
-mean (sim2015mature_adj$per_diff[20:38])
+round(mean (sim2015mature_adj$per_diff[20:38])*100,4)
 
 ```
 
 #### Figure 3: 
-Total legal biomass using historic known biomass from surveys and those calculated in simulation 1, without using Port Frederick or Port Camden (2015 sampling areas).
+Total legal biomass using historic known biomass from surveys (K) and those calculated in simulation 1 (S), without using Port Frederick or Port Camden (2015 sampling areas).
 ![Simulation using 2015 survey areas](sim2015_adj.png)
 
 #### Figure 4: 
-Total mature biomass using historic known biomass from surveys and those calculated in simulation 1, without using Port Frederick or Port Camden (2015 sampling areas).
+Total mature biomass using historic known biomass from surveys (K) and those calculated in simulation 1 (S), without using Port Frederick or Port Camden (2015 sampling areas).
 ![Simulation using 2015 survey areas](sim2015mature_adj.png)
 
 
+
 ### Simulation 2: Estimating Tanner crab abundance using only RKC survey areas
-```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
+This simulation uses only the red king crab survey areas to estimate the biomass for Tanner crab, it does NOT include any Tanner crab areas.  This would be an extreme example if the Tanner crab survey was cut in its entirety.
+
+Average percent difference for legal biomass in Sim 2
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE, comment=""}
 simRKC2_adj <- survey_sim (dat4, areas_RKC_only)
-mean (simRKC2_adj$per_diff[20:38])
-
-simRKC2mature_adj <- survey_sim_mature (dat5, areas_RKC_only)
-mean (simRKC2mature_adj$per_diff[20:38])
-ls()
+round(mean (simRKC2_adj$per_diff[20:38])*100,4)
 ```
-
-Total legal biomiass using historic biomass from surveys and those calculated from a simulation using ONLY red king crab survey areas. 
+Average percent difference for mature biomass in Sim 2
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE, comment=""}
+simRKC2mature_adj <- survey_sim_mature (dat5, areas_RKC_only)
+round(mean (simRKC2mature_adj$per_diff[20:38])*100,4)
+#ls()
+```
+#### Figure 5: 
+Total legal biomiass using historic biomass from surveys (K) and those calculated from a simulation 2 (S) using ONLY red king crab survey areas. 
 
 ![Simulation using only RKC areas](simRKC2_adj.png)
-
-Total mature biomass using the same simulation
+#### Figure 6: 
+Total mature biomass using historic biomass from surveys (K) and those calculated from a simulation 2 (S) using ONLY red king crab survey areas. 
 ![Simulation using only RKC areas for mature biomass](simRKC2mature_adj.png)
 
 ### Simulation 3: 2015 survey areas using only Tanner crab leg 1 (removing leg 2)
-```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE}
-sim_areas1_adj <- survey_sim(dat4, areas_1)
-mean (sim_areas1_adj$per_diff[20:38])
-ls()
+Simulation 3 builds off the 2015 survey areas sampled.  The next step would be to eliminate one of the Tanner crab survey legs.  In this simulation leg 2 was eliminated, this removes Thomas Bay and Holkham Bay from the surveyed areas.
 
+Average percent difference for legal biomass in Sim 3
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE, comment=""}
+sim_areas1_adj <- survey_sim(dat4, areas_1)
+round(mean (sim_areas1_adj$per_diff[20:38])*100,4)
+#ls()
 ```
-Total legal biomiass using historic biomass from surveys and those calculated from a simulation using 2015 survey areas and only leg 1 of the Tanner crab survey.
+Average percent difference for mature biomass in Sim 3
+```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, cache = TRUE, comment=""}
+sim_areas1mature_adj <- survey_sim_mature(dat5, areas_1)
+round(mean (sim_areas1mature_adj$per_diff[20:38])*100,4)
+ls()
+```
+#### Figure 7: 
+Total legal biomiass using historic biomass from surveys (K) and those calculated from simulation 2 (S) using 2015 survey areas and only leg 1 of the Tanner crab survey.
 
 ![Simulation using 2015 areas and only Tanner leg 1](sim_areas1_adj.png)
 
+#### Figure 8:
+Total mature biomass using historic biomass from surveys (K) and those calculated from simulation 2 (S) using 2015 survey areas and only leg 1 of the Tanner crab survey.
 
+![Simulation for mature using 2015 areas and only Tanner leg 1](sim_areas1mature_adj.png)
+
+###Table of % differences for simulations for Legal biomass
 
 ```{r, echo=FALSE}
 # table to summarize the average % difference  over all years for each simulation
@@ -225,7 +249,7 @@ sim_areas1_adj_avg <- round(mean (sim_areas1_adj$per_diff[20:38]),4)*100
 #per_diff <- c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg)
 table1 <- matrix(c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg), ncol =3, byrow=TRUE)
 colnames(table1) <- c("Sim 1", "Sim 2", "Sim 3")
-rownames(table1) <- c("average % difference")
+rownames(table1) <- c("avg % difference")
 table1
 ####
 
