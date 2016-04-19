@@ -29,6 +29,9 @@ library(tidyr)
 library(reshape2)
 library(extrafont)
 library(ggthemes)
+library(knitr)
+library(pander)
+
 #setwd("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp")
 dat_adj <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab data_legal_adj.csv") # biomass by year and survey area
 percent <- read.csv("C:/Users/kjpalof/Documents/R projects/survey-cut-sim_kp/data/tanner crab percent.csv") # file with the percent contribution for each area
@@ -66,10 +69,11 @@ dat5 %>%
 ### Known biomass from CSA models (using survey CPUEs)
 
 #####Legal Biomass and expansion factors 
-```{r, echo = FALSE, comment=""}
+```{r pander, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
 #head(dat2)
 # using percent for each area from the last 10 years of the survey - percent_survey_area
-known_dat_survey_adj
+panderOptions("digits", 2)
+pander(known_dat_survey_adj)
 #ls()
 
 ```
