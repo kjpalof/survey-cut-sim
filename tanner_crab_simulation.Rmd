@@ -95,7 +95,7 @@ ggplot(known_dat_survey_adj, aes(Year_Survey, total_lb)) + geom_point(size=2) +g
 ```
 
 
-#### Table 2: Legal Biomass and expansion factors 
+#### Table 2: Mature Biomass and expansion factors 
 ```{r pander2, echo = FALSE, comment=""}
 #head(dat2)
 # using percent for each area from the last 10 years of the survey - percent_survey_area
@@ -204,14 +204,27 @@ round(mean (sim2015mature_adj$per_diff[20:38])*100,4)
 
 ```
 
-#### Figure 3: 
-Total legal biomass using historic known biomass from surveys (K) and those calculated in simulation 1 (S), without using Port Frederick or Port Camden (2015 sampling areas).
-![Simulation using 2015 survey areas](sim2015_adj.png)
+The total biomass for both legal and mature crab from Simulation 1 (S) is visually represented in the figures below (Figure 3 & 4), along with the total biomass from the "known (K)" survey data. Simulation 1 mirrors those survey areas used in the 2015 survey by excluding both Port Camden and Port Frederick.
+
+#### Figure 3:
+```{r figure3, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
+ggplot(sim2015_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
+  ggtitle('Simulation 1 (2015 survey areas): total LEGAL biomass (lb)')
+```
 
 #### Figure 4: 
-Total mature biomass using historic known biomass from surveys (K) and those calculated in simulation 1 (S), without using Port Frederick or Port Camden (2015 sampling areas).
-![Simulation using 2015 survey areas](sim2015mature_adj.png)
-
+```{r figure4, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
+ggplot(sim2015mature_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 8000000, 1000000))+
+  coord_cartesian(ylim=c(0,8000000)) +
+  xlab('Survey Year') + ylab('Total MATURE biomass adj')+
+  ggtitle('Simulation 1 (2015 survey areas): total MATURE biomass (lb)')
+```
 
 
 ### Simulation 2: Estimating Tanner crab abundance using only RKC survey areas
@@ -228,13 +241,29 @@ simRKC2mature_adj <- survey_sim_mature (dat5, areas_RKC_only)
 round(mean (simRKC2mature_adj$per_diff[20:38])*100,4)
 #ls()
 ```
-#### Figure 5: 
-Total legal biomiass using historic biomass from surveys (K) and those calculated from a simulation 2 (S) using ONLY red king crab survey areas. 
 
-![Simulation using only RKC areas](simRKC2_adj.png)
+The total biomass for both legal and mature crab from Simulation 2 (S) is visually represented in the figures below (Figure 5 & 6), along with the total biomass from the "known (K)" survey data. Simulation 2 uses only survey biomass data from the red king crab surveys (RKC) to estimate Tanner crab biomass.
+
+#### Figure 5:
+```{r figure5, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
+ggplot(simRKC2_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
+  ggtitle('Simulation 2 (RKC survey areas only): total LEGAL biomass (lb)')
+```
+
 #### Figure 6: 
-Total mature biomass using historic biomass from surveys (K) and those calculated from a simulation 2 (S) using ONLY red king crab survey areas. 
-![Simulation using only RKC areas for mature biomass](simRKC2mature_adj.png)
+```{r figure6, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
+ggplot(simRKC2mature_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 8000000, 1000000))+
+  coord_cartesian(ylim=c(0,8000000)) +
+  xlab('Survey Year') + ylab('Total MATURE biomass adj')+
+  ggtitle('Simulation 2 (RKC survey areas only): total MATURE biomass (lb)')
+```
+
 
 ### Simulation 3: 2015 survey areas using only Tanner crab leg 1 (removing leg 2)
 Simulation 3 builds off the 2015 survey areas sampled.  The next step would be to eliminate one of the Tanner crab survey legs.  In this simulation leg 2 was eliminated, this removes Thomas Bay and Holkham Bay from the surveyed areas.
@@ -249,19 +278,34 @@ Average percent difference for mature biomass in Sim 3
 ```{r, echo = FALSE, eval = TRUE, message = FALSE, error = FALSE, comment=""}
 sim_areas1mature_adj <- survey_sim_mature(dat5, areas_1)
 round(mean (sim_areas1mature_adj$per_diff[20:38])*100,4)
-ls()
+#ls()
 ```
-#### Figure 7: 
-Total legal biomiass using historic biomass from surveys (K) and those calculated from simulation 2 (S) using 2015 survey areas and only leg 1 of the Tanner crab survey.
 
-![Simulation using 2015 areas and only Tanner leg 1](sim_areas1_adj.png)
+The total biomass for both legal and mature crab from Simulation 3 (S) is visually represented in the figures below (Figure 7 & 8), along with the total biomass from the "known (K)" survey data. Simulation 3 uses the survey areas used in 2015 with the removal of leg 2 (thomas bay and holkham bay) of the Tanner crab survey.  Survey areas included in this simulation are: 
+areas_1 <- c("EI" , "GB" , "GLB" ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" ).
+
+#### Figure 7: 
+```{r figure7, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
+ggplot(sim_areas1_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 55000000, 1000000))+
+  coord_cartesian(ylim=c(0,5500000)) +
+  xlab('Survey Year') + ylab('Total LEGAL biomass adj')+
+  ggtitle('Simulation 3 (2015 areas and leg 1 TCS): total LEGAL biomass (lb)')
+```
 
 #### Figure 8:
-Total mature biomass using historic biomass from surveys (K) and those calculated from simulation 2 (S) using 2015 survey areas and only leg 1 of the Tanner crab survey.
+```{r figure8, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
+ggplot(sim_areas1mature_adj, aes(Year_Survey, total_lb, color = type)) + geom_point(size=2) +geom_smooth() +
+  scale_color_tableau() +
+  scale_x_continuous(breaks = seq(1996, 2016, 2))+ scale_y_continuous(breaks = seq(0, 8000000, 1000000))+
+  coord_cartesian(ylim=c(0,8000000)) +
+  xlab('Survey Year') + ylab('Total MATURE biomass adj')+
+  ggtitle('Simulation 3 (2015 areas and leg 1 TCS): total MATURE biomass (lb)')
+```
 
-![Simulation for mature using 2015 areas and only Tanner leg 1](sim_areas1mature_adj.png)
 
-###Table of % differences for simulations for Legal biomass
+###Table of % differences for simulations for LEGAL biomass
 
 ```{r, echo=FALSE}
 # table to summarize the average % difference  over all years for each simulation
@@ -274,8 +318,8 @@ simRKC2_adj_avg <- round(mean (simRKC2_adj$per_diff[20:38]),4)*100
 sim_areas1_adj_avg <- round(mean (sim_areas1_adj$per_diff[20:38]),4)*100
 
 #per_diff <- c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg)
-table1 <- matrix(c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg), ncol =3, byrow=TRUE)
-colnames(table1) <- c("Sim 1", "Sim 2", "Sim 3")
+table1 <- matrix(c("legal", sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg), ncol =4, byrow=TRUE)
+colnames(table1) <- c(" ", "Sim 1", "Sim 2", "Sim 3")
 rownames(table1) <- c("avg % difference")
 table1
 ####
