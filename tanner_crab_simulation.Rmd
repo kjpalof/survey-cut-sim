@@ -1,7 +1,7 @@
 ---
-title: "Tanner Crab Simulation"
+title: "Tanner Crab Simulation - work in progress- DRAFT"
 author: "Katie Palof"
-date: "April 11, 2016"
+date: "May 19th, 2016"
 output: html_document
 ---
 
@@ -11,12 +11,12 @@ The goal of these simulations was to determine the probably effect of removing s
 
 
 ### Data Used
-The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models (historic excel files) for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.  To better match historically reported biomasses, estimates for Glacier Bay, Thomas Bay, Port Camden, and Holkham Bay for early years without a survey were estimated to be the minimium from the survey start until 2012. These are referred to in this document as adjusted biomass estiamtes of legal and mature crab. 
+The biomass data used in these simulations is taken from the sigma plot 'bay by bay' documents for legal biomass from each area and from the individual CSA models (historic excel files) for mature biomass from each area.  They are slightly different from those biomasses reported in annual stock health documents but are the most accurate and complete.  To better match historically reported biomasses, estimates for Glacier Bay, Thomas Bay, Port Camden, and Holkham Bay for early years without a survey were estimated to be the minimium from the survey start until 2012. These are referred to in this document as adjusted biomass estimates of legal and mature crab. 
 
 The expansion percentage used from 2001 until 2014 designated 71% of the tanner biomass to be from the survey areas while 29% was from non-surveyed areas.  This percentage was calculated form historic (1980-2000) harvest records. 
 It was thought that when removing survey areas that this expansion would be adjusted by the percent contribution of that survey area to historic harvest.  However, this drastically changed the biomass estimates due to the historic harvest percentages being different from each survey area's actual contribution to the biomass in most years.  Therefore, the contribution of each survey areas to the estimate of biomass was calculated for the last 10 years of the survey (2005-2015).  This percent contribution, scaled to a total of 71%, was used to in these simulations to determine the expansion factor for each area if it was removed from the survey.  
 
-In each simulation the areas surveyed were set for all years.  Historic survey biomass was used for these areas and the overall percent contribution was determined by summing the percent contribution for each area.  Each simulation therefore, results in a time series of total biomass estimates where the survey biomass component only uses areas designated in the simulation and the non-survery biomass is expanded from the calculated survey biomass.  The simulation does NOT currently allow for variation between years of the survey areas sampled, this would be the next step.  The total biomass time series was then compared to the "known" time series (K) of total biomass.  This comparison is represented visually in a figure for each simulation (S) and as an average percent difference from the known biomass (table X). 
+In each simulation the areas surveyed were set for all years.  Historic survey biomass was used for these areas and the overall percent contribution was determined by summing the percent contribution for each area.  Each simulation therefore, results in a time series of total biomass estimates where the survey biomass component only uses areas designated in the simulation and the non-survery biomass is expanded from the calculated survey biomass.  The simulation does NOT currently allow for variation between years of the survey areas sampled, this would be the next step.  The total biomass time series was then compared to the "known" time series (K) of total biomass.  This comparison is represented visually in a figure for each simulation (S) and as an average percent difference from the known biomass (Table 3). 
 
 
 
@@ -242,7 +242,7 @@ round(mean (simRKC2mature_adj$per_diff[20:38])*100,4)
 #ls()
 ```
 
-The total biomass for both legal and mature crab from Simulation 2 (S) is visually represented in the figures below (Figure 5 & 6), along with the total biomass from the "known (K)" survey data. Simulation 2 uses only survey biomass data from the red king crab surveys (RKC) to estimate Tanner crab biomass.
+The total biomass for both legal and mature crab from Simulation 2 (S) is visually represented in the figures below (Figure 5 & 6), along with the total biomass from the "known (K)" survey data. Simulation 2 uses only survey biomass data from the red king crab surveys (RKC) to estimate Tanner crab biomass. Figures 5 & 6 show that using on the red king crab data tends to over estimate tanner crab abundance in higher years and under estimate abundance in low years.  This will be helpful in formation if only the red crab data is used to calculate abundance in the future.
 
 #### Figure 5:
 ```{r figure5, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
@@ -281,8 +281,9 @@ round(mean (sim_areas1mature_adj$per_diff[20:38])*100,4)
 #ls()
 ```
 
-The total biomass for both legal and mature crab from Simulation 3 (S) is visually represented in the figures below (Figure 7 & 8), along with the total biomass from the "known (K)" survey data. Simulation 3 uses the survey areas used in 2015 with the removal of leg 2 (thomas bay and holkham bay) of the Tanner crab survey.  Survey areas included in this simulation are: 
-areas_1 <- c("EI" , "GB" , "GLB" ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" ).
+The total biomass for both legal and mature crab from Simulation 3 (S) is visually represented in the figures below (Figure 7 & 8), along with the total biomass from the "known (K)" survey data. Simulation 3 uses the survey areas used in 2015 with the removal of leg 2 (thomas bay and holkham bay) of the Tanner crab survey.  
+
+Survey areas included in this simulation are: areas_1 <- c("EI" , "GB" , "GLB" ,"ICY" ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" ).
 
 #### Figure 7: 
 ```{r figure7, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
@@ -322,8 +323,10 @@ round(mean (sim_areas2mature_adj$per_diff[20:38])*100,4)
 #ls()
 ```
 
-The total biomass for both legal and mature crab from Simulation 4 (S) is visually represented in the figures below (Figure 9 & 10), along with the total biomass from the "known (K)" survey data. Simulation 4 uses the survey areas used in 2015 with the removal of leg 1 (glacier bay and icy strait) of the Tanner crab survey.  Survey areas included in this simulation are: 
-areas_2 <- c("EI" , "GB" , "HB"  ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" , "TB")
+The total biomass for both legal and mature crab from Simulation 4 (S) is visually represented in the figures below (Figure 9 & 10), along with the total biomass from the "known (K)" survey data. Simulation 4 uses the survey areas used in 2015 with the removal of leg 1 (glacier bay and icy strait) of the Tanner crab survey. Although the average percent difference is low in this simulation the simulation abundance trend is overall more variable than previous simulations.  
+
+Survey areas included in this simulation are: areas_2 <- c("EI" , "GB" , "HB"  ,"LS",  "NJ" , "PB" , "PS",  "SC" , "SP" , "TB")
+
 
 #### Figure 9: 
 ```{r figure9, echo = FALSE, message = FALSE, error = FALSE, warning = FALSE, comment=""}
@@ -346,7 +349,7 @@ ggplot(sim_areas2mature_adj, aes(Year_Survey, total_lb, color = type)) + geom_po
 ```
 
 
-###Table of % differences for simulations for LEGAL biomass
+###Table 3: Average % differences of total biomass for simulations 
 
 ```{r, echo=FALSE}
 # table to summarize the average % difference  over all years for each simulation
@@ -375,7 +378,17 @@ table1
 
 ```
 
+```{r pander3, echo = FALSE, comment=""}
+#head(dat2)
+# using percent for each area from the last 10 years of the survey - percent_survey_area
+panderOptions("digits", 2)
+pander(table1)
+#ls()
+```
+Average percent differenc can be misleading since large difference above or below the known biomass trend can cancel each other out, creating a low average percent difference when large actual differences are occuring.  These simulations should be interpreted with caution.
+
+Future work:
+1) Simulations that allow for different areas to be sampled in each year
+2) Simulations for red king crab survey
 
 
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
