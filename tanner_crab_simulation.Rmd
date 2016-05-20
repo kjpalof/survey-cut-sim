@@ -373,7 +373,7 @@ sim4_mature <-round(mean (sim_areas2mature_adj$per_diff[20:38])*100,2)
 table1 <- matrix(c(sim2015_adj_avg, simRKC2_adj_avg, sim_areas1_adj_avg, sim4_adj_avg_legal, sim1_mature, sim2_mature, sim3_mature, sim4_mature), ncol =4, byrow=TRUE)
 colnames(table1) <- c("Sim 1", "Sim 2", "Sim 3", "Sim 4")
 rownames(table1) <- c("legal", "mature")
-table1
+#table1
 ####
 
 ```
@@ -387,8 +387,10 @@ pander(table1)
 ```
 Average percent differenc can be misleading since large difference above or below the known biomass trend can cancel each other out, creating a low average percent difference when large actual differences are occuring.  These simulations should be interpreted with caution.
 
-Future work:
+###Future work:
+
 1) Simulations that allow for different areas to be sampled in each year
+
 2) Simulations for red king crab survey
 
 
