@@ -28,7 +28,7 @@ survey_sim_harvest <- function(df, areas_used) {
   
 }
 
-survey_sim_harvest (dat2, areas_2015)
+#survey_sim_harvest (dat2, areas_2015)
 
 
 #using the last 10 years of survey biomass for each area to calculate percent contribution
@@ -101,6 +101,6 @@ survey_sim_mature <- function(df, areas_used) {
 #test %>%
  # mutate (diff = ifelse( type == "K", 0, (known_dat_survey$total_lb - sim2$total_lb))) -> test
 
-ggplot(test, aes(Year_Survey, total_lb, color = type)) + geom_point() +geom_smooth()
+#ggplot(test, aes(Year_Survey, total_lb, color = type)) + geom_point() +geom_smooth()
 
 
