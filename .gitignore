@@ -7,3 +7,6 @@
 *.xlsx
 ./data
 ./misc
+./figures
+./tanner_crab_simulation_files
+./tanner_crab_simulation_cache
