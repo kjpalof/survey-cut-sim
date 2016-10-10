@@ -31,6 +31,7 @@ library(extrafont)
 library(ggthemes)
 library(knitr)
 library(pander)
+library(rmarkdown)
 #set graphing theme
 loadfonts(device="win")
 windowsFonts(Times=windowsFont("TT Times New Roman"))

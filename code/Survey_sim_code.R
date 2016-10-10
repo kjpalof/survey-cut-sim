@@ -5,6 +5,8 @@
 # Goal: to create a simulation that would allow you to remove each areas component to the survey biomass estimate
 # and place it in the NON-survey expansion factor part of the regional estimate.
 
+# this code deals with Tanner crab survey data - LEGAL biomass only.
+
 library(plyr)
 library(dplyr)
 library(stringr)
@@ -13,6 +15,8 @@ library(tidyr)
 library(reshape2)
 library(extrafont)
 library(ggthemes)
+library(rmarkdown)
+
 #set graphing theme
 loadfonts(device="win")
 windowsFonts(Times=windowsFont("TT Times New Roman"))
